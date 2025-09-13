@@ -88,7 +88,7 @@ jobs:
             chmod -R 755 storage bootstrap/cache
             chmod 644 .env
             
-            echo "🐳 Stopping and cleaning Docker containers..."
+            echo "🐳 Stopping and cleaning Docker containers... ..."
             docker compose down --remove-orphans || true
             docker system prune -a -f || true
             docker volume prune -f || true
