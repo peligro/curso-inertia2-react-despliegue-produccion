@@ -64,6 +64,8 @@ jobs:
             grep -v "^GEMINI_API_KEY=" | \
             grep -v "^GEMINI_BASE_URL=" | \
             grep -v "^DB_USERNAME=" | \
+            grep -v "^FILESYSTEM_DISK=" | \
+            grep -v "^VITE_APP_URL=" | \
             grep -v "^DB_PASSWORD=" > .env.clean
             
             # Añade las variables correctas
@@ -85,6 +87,10 @@ jobs:
               echo "DEEPSEEK_API_URL=${{ secrets.DEEPSEEK_API_URL }}"
               echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}"
               echo "GEMINI_BASE_URL=${{ secrets.GEMINI_BASE_URL }}"
+              echo "FILESYSTEM_DISK=${{ secrets.FILESYSTEM_DISK }}"
+              echo "VITE_APP_URL=${{ secrets.VITE_APP_URL }}"
+              
+              
             } | awk '!seen[$0]++' | grep -v "^$" | grep -v "^#" > .env
             
             # Limpiar archivos temporales
