@@ -24,7 +24,7 @@ RUN docker-php-ext-configure ldap --with-libdir=/lib/x86_64-linux-gnu && \
     docker-php-ext-install pdo_mysql mbstring zip gd pgsql pdo_pgsql && \
     docker-php-ext-enable pgsql pdo_pgsql
 
-# Instalar Node.js 21 (CORREGIDO)
+# Instalar Node.js 21
 RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - && \
     apt-get install -y nodejs && \
     node -v && npm -v
@@ -41,7 +41,7 @@ COPY supervisor/supervisor.conf /etc/supervisor/supervisord.conf
 # Establecer directorio de trabajo
 WORKDIR /var/www/html
 
-# Copiar el código de la aplicación
+# Copiar el código de la aplicación (excluir node_modules con .dockerignore)
 COPY . .
 
 # Instalar dependencias de Composer
@@ -52,8 +52,12 @@ RUN mkdir -p vendor && \
 
 # Instalar dependencias de Node.js y compilar assets
 RUN if [ -f package.json ]; then \
-        npm install --only=production && \
-        npm run build; \
+        # Instalar TODAS las dependencias (incluye devDependencies para build) \
+        npm install && \
+        # Compilar assets para producción \
+        npm run build && \
+        # Limpiar dependencias de desarrollo (opcional) \
+        npm prune --production; \
     fi
 
 # Configurar permisos
