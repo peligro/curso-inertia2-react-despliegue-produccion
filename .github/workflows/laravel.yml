@@ -1,0 +1,146 @@
+name: Laravel CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      APP_KEY: ${{ secrets.APP_KEY }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_DATABASE: ${{ secrets.DB_DATABASE }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      EC2_USER: ${{ secrets.EC2_USER }}
+      AWS_USE_PATH_STYLE_ENDPOINT: ${{ secrets.AWS_USE_PATH_STYLE_ENDPOINT }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      DEEPSEEK_API_URL: ${{ secrets.DEEPSEEK_API_URL }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_BASE_URL: ${{ secrets.GEMINI_BASE_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Despliegue en EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/proyecto
+             
+            # hacemos pull a la rama main ...
+            echo "Pulling latest code from main branch..."
+            git fetch origin main
+            git reset --hard origin/main
+            
+            # Cree un .env nuevo a partir del ejemplo pero elimine las variables que reemplazaremos
+            echo "creando archivo .env..."
+            cp .env.example .env.template
+            
+            # Eliminar variables que serán reemplazadas
+            grep -v "^APP_KEY=" .env.template | \
+            grep -v "^APP_DEBUG=" | \
+            grep -v "^APP_ENV=" | \
+            grep -v "^APP_URL=" | \
+            grep -v "^DB_CONNECTION=" | \
+            grep -v "^DB_HOST=" | \
+            grep -v "^DB_PORT=" | \
+            grep -v "^DB_DATABASE=" | \
+            grep -v "^AWS_USE_PATH_STYLE_ENDPOINT=" | \
+            grep -v "^OPENAI_API_KEY=" | \
+            grep -v "^DEEPSEEK_API_KEY=" | \
+            grep -v "^DEEPSEEK_API_URL=" | \
+            grep -v "^GEMINI_API_KEY=" | \
+            grep -v "^GEMINI_BASE_URL=" | \
+            grep -v "^DB_USERNAME=" | \
+            grep -v "^DB_PASSWORD=" > .env.clean
+            
+            # Añade las variables correctas
+            {
+              cat .env.clean
+              echo "APP_KEY=${{ secrets.APP_KEY }}"
+              echo "APP_DEBUG=false"
+              echo "APP_ENV=production"
+              echo "APP_URL=http://${{ secrets.EC2_HOST }}"
+              echo "DB_CONNECTION=pgsql"
+              echo "DB_HOST=${{ secrets.DB_HOST }}"
+              echo "DB_PORT=${{ secrets.DB_PORT }}"
+              echo "DB_DATABASE=${{ secrets.DB_DATABASE }}"
+              echo "DB_USERNAME=${{ secrets.DB_USERNAME }}"
+              echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+              echo "AWS_USE_PATH_STYLE_ENDPOINT=${{ secrets.AWS_USE_PATH_STYLE_ENDPOINT }}"
+              echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}"
+              echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}"
+              echo "DEEPSEEK_API_URL=${{ secrets.DEEPSEEK_API_URL }}"
+              echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}"
+              echo "GEMINI_BASE_URL=${{ secrets.GEMINI_BASE_URL }}"
+            } | awk '!seen[$0]++' | grep -v "^$" | grep -v "^#" > .env
+            
+            # Limpiar archivos temporales
+            rm -f .env.template .env.clean
+            
+            # Mostrar el contenido final del .env para depuración
+            echo "Final .env content (relevant variables):"
+            grep -E "^(APP_|DB_)" .env
+            echo "---"
+            echo "Total lines in .env:"
+            wc -l .env
+            
+            # Establecer permisos adecuados
+            echo "Configuración de permisos de archivos..."
+            chmod -R 755 storage bootstrap/cache
+            
+            # Detener y limpiar los contenedores
+            echo "Detener y limpiar contenedores Docker..."
+            docker compose down || true
+            docker system prune --all --force || true
+            docker volume prune --force || true
+            
+            # Construir e iniciar contenedores
+            echo "Construcción y puesta en marcha de contenedores..."
+            docker compose up --build -d
+            
+            # Espere a que los contenedores estén listos
+            echo "Espere a que los contenedores estén listos..."
+            sleep 45
+            
+            # Establecer permisos dentro del contenedor
+            echo "Establecer permisos dentro del contenedor..."
+            docker exec peligro-laravel-app chown -R www-data:www-data storage bootstrap/cache || true
+            docker exec peligro-laravel-app chmod -R 775 storage bootstrap/cache || true
+            
+            # Ejecute composer install dentro del contenedor de la aplicación
+            echo "Instalación de dependencias de Composer..."
+            docker exec peligro-laravel-app composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+            
+            # Primero, borre el caché
+            echo "Borrando cache..."
+            docker exec peligro-laravel-app php artisan config:clear
+            docker exec peligro-laravel-app php artisan cache:clear
+            docker exec peligro-laravel-app php artisan view:clear
+            
+            # Ejecutar migraciones
+            echo "Ejecutando migrations..."
+            docker exec peligro-laravel-app php artisan migrate --force
+            
+            # Optimizando aplicación
+            echo "Optimizing application..."
+            docker exec peligro-laravel-app php artisan config:cache
+            docker exec peligro-laravel-app php artisan route:cache
+            docker exec peligro-laravel-app php artisan view:cache
+            docker exec peligro-laravel-app php artisan optimize
+            
+            
+            
+            echo "¡Implementación completada exitosamente!"
