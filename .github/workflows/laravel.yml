@@ -47,31 +47,42 @@ jobs:
             # Copiar .env.example como base
             cp .env.example .env
             
-            # Sobrescribir solo las variables necesarias
-            echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-            echo "APP_DEBUG=false" >> .env
-            echo "APP_ENV=production" >> .env
-            echo "APP_URL=http://${{ secrets.EC2_HOST }}" >> .env
+            # Función para actualizar o agregar variables
+            update_env_var() {
+              local key="$1"
+              local value="$2"
+              
+              if grep -q "^$key=" .env; then
+                # Reemplazar variable existente
+                sed -i "s|^$key=.*|$key=$value|" .env
+              else
+                # Agregar variable nueva al final
+                echo "$key=$value" >> .env
+              fi
+            }
             
-            echo "DB_CONNECTION=pgsql" >> .env
-            echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-            echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            # Actualizar variables específicas
+            update_env_var "APP_KEY" "${{ secrets.APP_KEY }}"
+            update_env_var "APP_DEBUG" "false"
+            update_env_var "APP_ENV" "production"
+            update_env_var "APP_URL" "http://${{ secrets.EC2_HOST }}"
             
-            echo "AWS_USE_PATH_STYLE_ENDPOINT=${{ secrets.AWS_USE_PATH_STYLE_ENDPOINT }}" >> .env
+            update_env_var "DB_CONNECTION" "pgsql"
+            update_env_var "DB_HOST" "${{ secrets.DB_HOST }}"
+            update_env_var "DB_PORT" "${{ secrets.DB_PORT }}"
+            update_env_var "DB_DATABASE" "${{ secrets.DB_DATABASE }}"
+            update_env_var "DB_USERNAME" "${{ secrets.DB_USERNAME }}"
+            update_env_var "DB_PASSWORD" "${{ secrets.DB_PASSWORD }}"
             
-            echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
-            echo "DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}" >> .env
-            echo "DEEPSEEK_API_URL=${{ secrets.DEEPSEEK_API_URL }}" >> .env
-            echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
-            echo "GEMINI_BASE_URL=${{ secrets.GEMINI_BASE_URL }}" >> .env
+            update_env_var "AWS_USE_PATH_STYLE_ENDPOINT" "${{ secrets.AWS_USE_PATH_STYLE_ENDPOINT }}"
             
-            echo "VITE_APP_URL=${{ secrets.VITE_APP_URL }}" >> .env
+            update_env_var "OPENAI_API_KEY" "${{ secrets.OPENAI_API_KEY }}"
+            update_env_var "DEEPSEEK_API_KEY" "${{ secrets.DEEPSEEK_API_KEY }}"
+            update_env_var "DEEPSEEK_API_URL" "${{ secrets.DEEPSEEK_API_URL }}"
+            update_env_var "GEMINI_API_KEY" "${{ secrets.GEMINI_API_KEY }}"
+            update_env_var "GEMINI_BASE_URL" "${{ secrets.GEMINI_BASE_URL }}"
             
-            # Eliminar duplicados manteniendo comentarios y estructura
-            awk -F= '!seen[$1]++' .env > .env.tmp && mv .env.tmp .env
+            update_env_var "VITE_APP_URL" "${{ secrets.VITE_APP_URL }}"
             
             echo "🔐 Setting file permissions..."
             chmod -R 755 storage bootstrap/cache
