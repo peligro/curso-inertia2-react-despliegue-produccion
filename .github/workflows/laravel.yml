@@ -29,6 +29,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: |
+          ssh -i ~/.ssh/ec2_key -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo '✅ SSH connection successful!'"
+
       - name: Despliegue en EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -88,7 +99,7 @@ jobs:
             chmod -R 755 storage bootstrap/cache
             chmod 644 .env
             
-            echo "🐳 Stopping and cleaning Docker containers... ..."
+            echo "🐳 Stopping and cleaning Docker containers..."
             docker compose down --remove-orphans || true
             docker system prune -a -f || true
             docker volume prune -f || true
@@ -104,9 +115,12 @@ jobs:
             
             echo "⚡ Optimizing application..."
             docker exec peligro-laravel-app php artisan optimize
-            docker exec peligro-laravel-app php artisan config:cache
-            docker exec peligro-laravel-app php artisan route:cache
-            docker exec peligro-laravel-app php artisan view:cache
             
-            echo "✅ Deployment completed successfully!"
+            echo "✅ Verifying deployment..."
+            # Verificar que vendor existe
+            docker exec peligro-laravel-app ls -la vendor/ > /dev/null && echo "✅ Vendor directory exists"
+            # Verificar que assets compilados existen
+            docker exec peligro-laravel-app ls -la public/build/ > /dev/null && echo "✅ Build assets exist"
+            
+            echo "🎉 Deployment completed successfully!"
             echo "🌐 Application URL: http://${{ secrets.EC2_HOST }}"

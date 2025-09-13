@@ -45,25 +45,18 @@ WORKDIR /var/www/html
 COPY . .
 
 # Instalar dependencias de Composer
-RUN mkdir -p vendor && \
-    if [ ! -f vendor/autoload.php ]; then \
-        composer install --no-dev --optimize-autoloader --no-interaction --no-progress; \
-    fi
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
-# Instalar dependencias de Node.js y compilar assets (CORREGIDO)
+# Instalar dependencias de Node.js y compilar assets
 RUN if [ -f package.json ]; then \
-        # Instalar TODAS las dependencias (incluyendo devDependencies) \
         npm install && \
-        # Compilar assets para producción \
         npm run build && \
-        # NO hacer prune para mantener vite disponible si se necesita \
-        # Las devDependencies se mantienen pero no afectan en producción \
-        echo "Build completed successfully"; \
+        npm cache clean --force; \
     fi
 
 # Configurar permisos
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
-    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache && \
+    chmod -R 775 storage bootstrap/cache
 
 # Script de entrada personalizado
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
