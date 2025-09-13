@@ -15,10 +15,6 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Configurar la zona horaria (opcional)
-# RUN ln -sf /usr/share/zoneinfo/America/Santiago /etc/localtime && \
-#     dpkg-reconfigure -f noninteractive tzdata
-
 # Instalar extensiones de PHP
 RUN docker-php-ext-configure ldap --with-libdir=/lib/x86_64-linux-gnu && \
     docker-php-ext-install pdo_mysql mbstring zip gd pgsql pdo_pgsql && \
@@ -32,7 +28,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_21.x | bash - && \
 # Instalar Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Copiar configuración personalizada de php.ini si es necesario
+# Copiar configuración de php.ini
 COPY php.ini /usr/local/etc/php/
 
 # Copiar configuración de Supervisor
@@ -54,9 +50,13 @@ RUN if [ -f package.json ]; then \
         npm cache clean --force; \
     fi
 
+# Verificar que los archivos se crearon
+RUN ls -la public/ && echo "Build assets:" && ls -la public/build/
+
 # Configurar permisos
-RUN chown -R www-data:www-data storage bootstrap/cache && \
-    chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache public && \
+    chmod -R 775 storage bootstrap/cache && \
+    chmod -R 755 public
 
 # Script de entrada personalizado
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
