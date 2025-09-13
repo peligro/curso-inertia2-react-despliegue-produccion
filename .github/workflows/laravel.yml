@@ -86,8 +86,13 @@ jobs:
             update_env_var "VITE_APP_URL" "${{ secrets.VITE_APP_URL }}"
             
             echo "🔐 Setting permissions..."
-            chmod -R 755 storage bootstrap/cache
+            # Solo cambiar permisos en archivos que no están montados como volúmenes
             chmod 644 .env
+
+            # Los permisos de storage y bootstrap/cache se manejan DENTRO del contenedor
+            # Eliminar archivos problemáticos antes del build
+            sudo rm -rf storage/framework/views/* 2>/dev/null || true
+            sudo rm -rf bootstrap/cache/* 2>/dev/null || true
             
             echo "🐳 Cleaning Docker..."
             docker compose down --remove-orphans || true

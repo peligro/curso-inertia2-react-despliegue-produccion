@@ -53,10 +53,14 @@ RUN if [ -f package.json ]; then \
 # Verificar que los archivos se crearon
 RUN ls -la public/ && echo "Build assets:" && ls -la public/build/
 
-# Configurar permisos
-RUN chown -R www-data:www-data storage bootstrap/cache public && \
+# Configurar permisos - MÁS ROBUSTO
+RUN mkdir -p storage/framework/{sessions,views,cache} bootstrap/cache && \
+    chown -R www-data:www-data storage bootstrap/cache && \
     chmod -R 775 storage bootstrap/cache && \
     chmod -R 755 public
+
+# Asegurar que los directorios existen con los permisos correctos
+RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache
 
 # Script de entrada personalizado
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
