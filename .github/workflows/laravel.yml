@@ -48,28 +48,16 @@ jobs:
             echo "Pulling latest code from main branch..."
             git fetch origin main
             git reset --hard origin/main
-            
-            # Instalar Node.js 20.x
-            #echo "Instalando Node.js 20.x..."
-            #sudo apt update
-            sudo apt install -y curl
-            #curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-            #sudo apt-get install -y nodejs
-            
-            # Verificar instalación
-            #echo "Node version:"
-            #node -v
-            #echo "NPM version:"
-            #npm -v
-            
+
             # Instalar dependencias de Node.js en la carpeta laravel
             echo "Instalando dependencias de Node.js..."
             cd laravel
             npm install --production
             cd ..
             
-            # Cree un .env nuevo a partir del ejemplo pero elimine las variables que reemplazaremos
-            echo "creando archivo .env..."
+            # Cree un .env nuevo en la carpeta laravel a partir del ejemplo
+            echo "creando archivo .env en carpeta laravel..."
+            cd laravel
             cp .env.example .env.template
             
             # Eliminar variables que serán reemplazadas
@@ -131,6 +119,9 @@ jobs:
             echo "Total lines in .env:"
             wc -l .env
             
+            # Volver al directorio raíz del proyecto
+            cd ..
+            
             # Detener y limpiar los contenedores
             echo "Detener y limpiar contenedores Docker..."
             docker compose down || true
@@ -144,11 +135,6 @@ jobs:
             # Espere a que los contenedores estén listos
             echo "Espere a que los contenedores estén listos..."
             sleep 45
-            
-            # Establecer permisos dentro del contenedor
-            echo "Establecer permisos dentro del contenedor..."
-            #docker exec laravel-app chown -R www-data:www-data /var/www/html/storage
-            #docker exec laravel-app chown -R www-data:www-data /var/www/html/bootstrap/cache
             
             # Ejecute composer install dentro del contenedor de la aplicación
             echo "Instalación de dependencias de Composer..."
@@ -170,7 +156,5 @@ jobs:
             docker exec laravel-app php artisan route:cache
             docker exec laravel-app php artisan view:cache
             docker exec laravel-app php artisan optimize
-            
-             
             
             echo "¡Implementación completada exitosamente!!!"
