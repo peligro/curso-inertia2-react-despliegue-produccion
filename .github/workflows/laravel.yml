@@ -134,7 +134,7 @@ jobs:
             
             # Espere a que los contenedores estén listos  
             echo "Espere a que los contenedores estén listos..."
-            sleep 45
+            sleep 15
             
             # Ejecute composer install dentro del contenedor de la aplicación
             echo "Instalación de dependencias de Composer..."
