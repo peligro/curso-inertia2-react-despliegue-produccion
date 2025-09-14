@@ -132,7 +132,7 @@ jobs:
             echo "Construcción y puesta en marcha de contenedores..."
             docker compose up --build -d
             
-            # Espere a que los contenedores estén listos
+            # Espere a que los contenedores estén listos  
             echo "Espere a que los contenedores estén listos..."
             sleep 45
             
