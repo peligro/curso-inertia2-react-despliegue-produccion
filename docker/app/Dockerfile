@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
 RUN ln -sf /usr/share/zoneinfo/America/Santiago /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
 # Instalar extensiones de PHP
-RUN docker-php-ext-configure ldap --with-libdir=/lib/x86_64-linux-gnu && docker-php-ext-install pdo_mysql mbstring zip gd pgsql pdo_pgsql && docker-php-ext-enable pgsql pdo_pgsql
+RUN docker-php-ext-configure ldap --with-libdir=/lib/x86_64-linux-gnu && docker-php-ext-install pdo_mysql mbstring zip gd pgsql pdo_pgsql && docker-php-ext-enable pgsql pdo_pgsql curl
 
 # Instalar Node.js 21
 #RUN curl -fsSL https://deb.nodesource.com/setup_21.x  | bash - && apt-get install -y nodejs && node -v && npm -v
