@@ -154,7 +154,7 @@ jobs:
             echo "Instalación de dependencias de Composer..."
             docker exec laravel-app composer install --no-dev --optimize-autoloader --no-interaction --no-progress
             
-            # Primero, borre el caché
+            # Primero, borre el caché  
             echo "Borrando cache..."
             docker exec laravel-app php artisan config:clear
             docker exec laravel-app php artisan cache:clear
