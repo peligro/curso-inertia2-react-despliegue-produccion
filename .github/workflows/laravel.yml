@@ -50,17 +50,17 @@ jobs:
             git reset --hard origin/main
             
             # Instalar Node.js 20.x
-            echo "Instalando Node.js 20.x..."
-            sudo apt update
+            #echo "Instalando Node.js 20.x..."
+            #sudo apt update
             sudo apt install -y curl
-            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-            sudo apt-get install -y nodejs
+            #curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+            #sudo apt-get install -y nodejs
             
             # Verificar instalación
-            echo "Node version:"
-            node -v
-            echo "NPM version:"
-            npm -v
+            #echo "Node version:"
+            #node -v
+            #echo "NPM version:"
+            #npm -v
             
             # Instalar dependencias de Node.js en la carpeta laravel
             echo "Instalando dependencias de Node.js..."
