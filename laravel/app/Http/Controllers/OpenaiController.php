@@ -230,21 +230,15 @@ class OpenaiController extends Controller
     }
     public function openai_cliente_oficial_3_post(Request $request)
     {
-        $request->validate(
-            [
-                'pregunta' => 'required|string|min:5'
-            ],
-            [
-                'pregunta.required' => 'El campo pregunta es obligatorio',
-                'pregunta.min' => 'La pregunta debe tener al menos 5 caracteres',
-                'pregunta.string' => 'La pregunta debe ser un texto',
-            ]
-        );
-        
+        $request->validate([
+            'pregunta' => 'required|string|min:5'
+        ], [
+            'pregunta.required' => 'El campo pregunta es obligatorio',
+            'pregunta.min' => 'La pregunta debe tener al menos 5 caracteres',
+            'pregunta.string' => 'La pregunta debe ser un texto',
+        ]);
+
         $startTime = microtime(true); 
-        $s3Path = null;
-        $success = false;
-        $error = null;
 
         try {
             $response = OpenAI::images()->create([
@@ -253,43 +247,39 @@ class OpenaiController extends Controller
                 'size' => '1024x1024',
                 'quality' => 'standard',
                 'n' => 1,
-                'response_format' => 'b64_json'
             ]);
 
-            // Obtener la imagen en base64 y decodificarla
-            $base64Image = $response->data[0]->b64_json;
+            $imageUrl = $response->data[0]->url;
             
-            if (empty($base64Image)) {
-                throw new Exception('No se recibió la imagen en formato base64');
+            if (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                throw new Exception('URL de imagen no válida');
             }
             
-            $imageContent = base64_decode($base64Image);
+            // Usar Guzzle/Http con headers de navegador
+            $imageContent = Http::withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept' => 'image/webp,image/apng,image/*,*/*;q=0.8',
+                'Accept-Language' => 'en-US,en;q=0.9',
+                'Referer' => 'https://platform.openai.com/',
+            ])->timeout(30)->get($imageUrl)->body();
             
-            if ($imageContent === false) {
-                throw new Exception('No se pudo decodificar la imagen base64');
-            }
+             
             
-            // Verificar que el contenido no esté vacío
-            if (strlen($imageContent) === 0) {
-                throw new Exception('La imagen decodificada está vacía');
+            if (empty($imageContent)) {
+                throw new Exception('No se pudo descargar la imagen (contenido vacío)');
             }
             
             $fileName = 'publicaciones/dalle_' . uniqid() . '.png';
-            
-            // Subir a S3 - confía en que funciona a menos que lance excepción
             Storage::disk('s3')->put($fileName, $imageContent, 'public');
-            
-            // No verifiques con exists() - S3 tiene consistencia eventual
-            // Si put() no lanzó excepción, asume que fue exitoso
             
             $s3Path = $fileName;
             $success = true;
-
-             
+            $error = null;
 
         } catch (\Exception $e) {
-            $error = 'Error: ' . $e->getMessage();
-            
+            $s3Path = null;
+            $success = false;
+            $error = 'Error: ' . $e->getMessage(); 
         }
         
         $endTime = microtime(true);
@@ -299,9 +289,7 @@ class OpenaiController extends Controller
             'api_response' => [
                 'respuesta' => $s3Path,
                 'tiempo' => $tiempo,
-                'pregunta_enviada' => $request->pregunta,
-                'success' => $success,
-                'error' => $error
+                'pregunta_enviada' => $request->pregunta
             ]
         ]);
     }
