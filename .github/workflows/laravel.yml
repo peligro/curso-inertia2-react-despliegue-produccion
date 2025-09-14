@@ -119,7 +119,7 @@ jobs:
             echo "Total lines in .env:"
             wc -l .env
             
-            # Volver al directorio raíz del proyecto
+            # Volver al directorio raíz del proyecto 
             cd ..
             
             # Detener y limpiar los contenedores
