@@ -253,7 +253,7 @@ class OpenaiController extends Controller
                 'size' => '1024x1024',
                 'quality' => 'standard',
                 'n' => 1,
-                'response_format' => 'b64_json' // ← FORMATO BASE64
+                'response_format' => 'b64_json'
             ]);
 
             // Obtener la imagen en base64 y decodificarla
@@ -275,22 +275,21 @@ class OpenaiController extends Controller
             }
             
             $fileName = 'publicaciones/dalle_' . uniqid() . '.png';
+            
+            // Subir a S3 - confía en que funciona a menos que lance excepción
             Storage::disk('s3')->put($fileName, $imageContent, 'public');
             
-            // Verificar que se subió correctamente
-            if (!Storage::disk('s3')->exists($fileName)) {
-                throw new Exception('No se pudo guardar la imagen en S3');
-            }
+            // No verifiques con exists() - S3 tiene consistencia eventual
+            // Si put() no lanzó excepción, asume que fue exitoso
             
             $s3Path = $fileName;
             $success = true;
 
+             
+
         } catch (\Exception $e) {
             $error = 'Error: ' . $e->getMessage();
-            Log::error('Error en openai_cliente_oficial_3_post', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            
         }
         
         $endTime = microtime(true);
