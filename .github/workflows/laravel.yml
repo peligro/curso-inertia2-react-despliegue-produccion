@@ -122,7 +122,7 @@ jobs:
             # Volver al directorio raíz del proyecto 
             cd ..
             
-            # Detener y limpiar los contenedores
+            # Detener y limpiar los contenedores 
             echo "Detener y limpiar contenedores Docker..."
             docker compose down || true
             docker system prune --all --force || true
