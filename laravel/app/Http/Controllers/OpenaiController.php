@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 //cliente oficial
 use OpenAI\Laravel\Facades\OpenAI;
 
@@ -228,8 +229,7 @@ class OpenaiController extends Controller
     {
         return Inertia::render('openai/ClienteOficial3');
     }
-    
-    public function openai_cliente_oficial_3_post(Request $request)
+   public function openai_cliente_oficial_3_post(Request $request)
     {
         $request->validate([
             'pregunta' => 'required|string|min:5'
@@ -239,6 +239,91 @@ class OpenaiController extends Controller
             'pregunta.string' => 'La pregunta debe ser un texto',
         ]);
 
+        $startTime = microtime(true);
+        $s3Path = null;
+        $error = null;
+        $localPath = null;
+
+        try {
+            $response = OpenAI::images()->create([
+                'model' => 'dall-e-3',
+                'prompt' => $request->pregunta,
+                'size' => '1024x1024',
+                'quality' => 'standard',
+                'n' => 1,
+            ]);
+
+            $imageUrl = $response->data[0]->url;
+
+            $ch = curl_init($imageUrl);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_HTTPHEADER => ['Accept: image/png'],
+            ]);
+
+            $imageContent = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+            curl_close($ch);
+
+            if ($imageContent === false || $httpCode !== 200 || strlen($imageContent) === 0) {
+                return redirect()->route('openai_cliente_oficial_3')->with([
+                    'css'=>'danger','success' => "❌ Error al descargar la imagen: {$curlError} (HTTP {$httpCode})"
+                ]);
+            }
+
+            $filename = 'dalle_' . uniqid() . '.png';
+            $localPath = base_path("tmp/{$filename}");
+            file_put_contents($localPath, $imageContent);
+
+            $fakeFile = new UploadedFile(
+                $localPath,
+                $filename,
+                'image/png',
+                null,
+                true
+            );
+
+            $s3Path = $fakeFile->store('publicaciones', 's3');
+
+        } catch (\Exception $e) {
+            return redirect()->route('openai_cliente_oficial_3')->with([
+                    'css'=>'danger','success' => 'Error: ' . $e->getMessage()
+                ]);
+            $error = 'Error: ' . $e->getMessage();
+        } finally {
+            if ($localPath && file_exists($localPath)) {
+                unlink($localPath);
+            }
+        }
+
+        $endTime = microtime(true);
+        $tiempo = round(($endTime - $startTime) * 1000, 2);
+
+        return Inertia::render('openai/ClienteOficial3', [
+            'api_response' => [
+                'respuesta' => $s3Path,
+                'tiempo' => $tiempo,
+                'pregunta_enviada' => $request->pregunta, 
+            ]
+        ]);
+    }
+
+    public function __openai_cliente_oficial_3_post(Request $request)
+    {
+        $request->validate(
+            [
+                'pregunta' => 'required|string|min:5'
+            ],
+            [
+                'pregunta.required' => 'El campo pregunta es obligatorio',
+                'pregunta.min' => 'La pregutna debe tener al menos 5 caracteres',
+                'pregunta.string' => 'La pregunta debe ser un texto',
+            ]
+        );
         $startTime = microtime(true); 
 
         try {
@@ -256,28 +341,25 @@ class OpenaiController extends Controller
                 throw new Exception('URL de imagen no válida');
             }
             
-            // Usar Guzzle/Http con headers de navegador
-            $imageContent = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept' => 'image/webp,image/apng,image/*,*/*;q=0.8',
-                'Accept-Language' => 'en-US,en;q=0.9',
-                'Referer' => 'https://platform.openai.com/',
-            ])->timeout(30)->get($imageUrl)->body();
-            
-             
-            
-            if (empty($imageContent)) {
-                throw new Exception('No se pudo descargar la imagen (contenido vacío)');
+            // Descargar la imagen directamente a un resource temporal
+            $imageContent = file_get_contents($imageUrl);
+            if ($imageContent === false) {
+                throw new Exception('No se pudo descargar la imagen');
             }
+            
             
             $fileName = 'publicaciones/dalle_' . uniqid() . '.png';
             Storage::disk('s3')->put($fileName, $imageContent, 'public');
             
-            $s3Path = $fileName;
+            // Obtener path 
+            $s3Path = $fileName; // 'dalle/dalle_68c332d2b3307.png'
+            
+            
             $success = true;
             $error = null;
 
         } catch (\Exception $e) {
+           
             $s3Path = null;
             $success = false;
             $error = 'Error: ' . $e->getMessage(); 
@@ -293,6 +375,7 @@ class OpenaiController extends Controller
                 'pregunta_enviada' => $request->pregunta
             ]
         ]);
+         
     }
     public function openai_cliente_oficial_4_crear_publicacion()
     {
