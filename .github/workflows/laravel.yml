@@ -55,6 +55,12 @@ jobs:
             npm install --production
             cd ..
             
+            # Crear carpeta tmp para compartir con contenedor
+            echo "Crear carpeta laravel/tmp"
+            cd laravel
+            mkdir -p tmp
+            cd ..
+
             # Cree un .env nuevo en la carpeta laravel a partir del ejemplo
             echo "creando archivo .env en carpeta laravel..."
             cd laravel
