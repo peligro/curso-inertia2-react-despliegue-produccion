@@ -58,7 +58,7 @@ jobs:
             # Crear carpeta tmp para compartir con contenedor
             echo "Crear carpeta laravel/temporal"
             cd laravel
-            mkdir -p tmp
+            mkdir -p temporal
             cd ..
 
             # Cree un .env nuevo en la carpeta laravel a partir del ejemplo
