@@ -111,7 +111,7 @@ jobs:
               echo "AWS_ENDPOINT="
             } | awk '!seen[$0]++' | grep -v "^$" | grep -v "^#" > .env
             
-            # Limpiar archivos temporales
+            # Limpiar archivos temporales 
             rm -f .env.template .env.clean
             
             # Mostrar el contenido final del .env para depuración
