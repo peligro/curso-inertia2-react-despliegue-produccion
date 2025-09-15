@@ -55,7 +55,7 @@ jobs:
             npm install --production
             cd ..
             
-            # Crear carpeta tmp para compartir con contenedor
+            # Crear carpeta tmp para compartir con contenedor 
             echo "Crear carpeta laravel/temporal"
             cd laravel
             mkdir -p temporal
