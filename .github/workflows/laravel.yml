@@ -46,8 +46,15 @@ jobs:
             
             # hacemos pull a la rama main ...  
             echo "Pulling latest code from main branch..."
-            git fetch origin main
+            git fetch --all
             git reset --hard origin/main
+
+            # Limpiar archivos no trackeados que puedan interferir
+            git clean -fd
+
+            # Forzar el checkout de todos los archivos, incluyendo los previamente ignorados
+            echo "Forzando checkout de todos los archivos..."
+            git checkout origin/main -- . 2>/dev/null || true
 
             # Instalar dependencias de Node.js en la carpeta laravel
             echo "Instalando dependencias de Node.js..."
