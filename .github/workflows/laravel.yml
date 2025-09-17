@@ -153,7 +153,7 @@ jobs:
             echo "Ejecutando migrations..."
             docker exec laravel-app php artisan migrate --force
             
-            echo "Optimizando aplicación..."
+            echo "Optimizando aplicación... "
             docker exec laravel-app php artisan config:cache
             docker exec laravel-app php artisan route:cache
             docker exec laravel-app php artisan view:cache
