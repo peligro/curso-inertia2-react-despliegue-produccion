@@ -16,14 +16,6 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# NUEVO: Instalar una versión específica de Node.js (opcional - más recomendable)
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Verificar instalación de Node.js
-RUN node --version && npm --version
-
 # Configurar la zona horaria
 RUN ln -sf /usr/share/zoneinfo/America/Santiago /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 

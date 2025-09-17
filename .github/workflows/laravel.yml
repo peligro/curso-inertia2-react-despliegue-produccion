@@ -146,12 +146,7 @@ jobs:
             docker exec laravel-app php artisan cache:clear
             docker exec laravel-app php artisan view:clear
 
-            # NUEVO: Construir assets de Vite/Inertia DENTRO del contenedor
-            echo "Instalando dependencias de Node.js..."
-            docker exec laravel-app npm ci --production
             
-            echo "Construyendo assets de Vite..."
-            docker exec laravel-app npm run build -- --force
 
             
             echo "Ejecutando migrations..."
