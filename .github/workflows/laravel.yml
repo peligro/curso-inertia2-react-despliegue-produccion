@@ -52,14 +52,9 @@ jobs:
             # Instalar dependencias de Node.js en la carpeta laravel
             echo "Instalando dependencias de Node.js..."
             cd laravel
-            npm install --production
+            npm install --production 
             cd ..
             
-            # Crear carpeta tmp para compartir con contenedor 
-            echo "Crear carpeta laravel/temporal"
-            cd laravel
-            mkdir -p temporal
-            cd ..
 
             # Cree un .env nuevo en la carpeta laravel a partir del ejemplo
             echo "creando archivo .env en carpeta laravel..."
@@ -127,10 +122,10 @@ jobs:
             echo "Total lines in .env:"
             wc -l .env
             
-            # Volver al directorio raíz del proyecto 
+            echo "Volver al directorio raíz del proyecto" 
             cd ..
             
-            # Detener y limpiar los contenedores 
+            
             echo "Detener y limpiar contenedores Docker..."
             docker compose down || true
             docker system prune --all --force || true
@@ -140,26 +135,22 @@ jobs:
             echo "Construcción y puesta en marcha de contenedores..."
             docker compose up --build -d
             
-            # Espere a que los contenedores estén listos  
-            echo "Espere a que los contenedores estén listos..."
-            sleep 15
+            echo "Esperando a que los contenedores estén listos..."
+            sleep 5
             
-            # Ejecute composer install dentro del contenedor de la aplicación
             echo "Instalación de dependencias de Composer..."
             docker exec laravel-app composer install --no-dev --optimize-autoloader --no-interaction --no-progress
             
-            # Primero, borre el caché  
-            echo "Borrando cache..."
+            echo "Borrando caché..."
             docker exec laravel-app php artisan config:clear
             docker exec laravel-app php artisan cache:clear
             docker exec laravel-app php artisan view:clear
+
             
-            # Ejecutar migraciones
             echo "Ejecutando migrations..."
             docker exec laravel-app php artisan migrate --force
             
-            # Optimizando aplicación
-            echo "Optimizing application..."
+            echo "Optimizando aplicación..."
             docker exec laravel-app php artisan config:cache
             docker exec laravel-app php artisan route:cache
             docker exec laravel-app php artisan view:cache
