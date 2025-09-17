@@ -30,21 +30,6 @@ services:
     networks:
       - custom_network
   
-  vite:
-    build:
-      context: .
-      dockerfile: ./docker/vite/Dockerfile
-    container_name: laravel-vite
-    working_dir: /var/www/html
-    volumes:
-      - ./laravel:/var/www/html
-    ports:
-      - "5173:5173"
-    networks:
-      - custom_network
-    depends_on:
-      - app
-    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
   
   
   
