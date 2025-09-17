@@ -51,9 +51,13 @@ jobs:
 
             # Instalar dependencias de Node.js en la carpeta laravel
             echo "Instalando dependencias de Node.js..."
+            rm -rf laravel/public/build
             cd laravel
             npm install --production
+            npm run build
             cd ..
+
+            
             
 
             # Cree un .env nuevo en la carpeta laravel a partir del ejemplo
@@ -146,9 +150,7 @@ jobs:
             docker exec laravel-app php artisan cache:clear
             docker exec laravel-app php artisan view:clear
 
-            echo "Construimos el build para Inertia..."
-            rm -rf laravel/public/build
-            docker exec -it laravel-vite npm run build
+            
             
             echo "Ejecutando migrations..."
             docker exec laravel-app php artisan migrate --force
