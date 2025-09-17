@@ -53,6 +53,7 @@ jobs:
             echo "Instalando dependencias de Node.js..."
             cd laravel
             npm install --production 
+            npm run build
             cd ..
             
 
