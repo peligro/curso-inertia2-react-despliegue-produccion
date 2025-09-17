@@ -52,7 +52,7 @@ jobs:
             # Instalar dependencias de Node.js en la carpeta laravel
             echo "Instalando dependencias de Node.js..."
             cd laravel
-            npm install --production
+            npm install --production --no-cache
             cd ..
             
 
@@ -146,7 +146,7 @@ jobs:
             docker exec laravel-app php artisan cache:clear
             docker exec laravel-app php artisan view:clear
 
-            echo "Instalación de dependencias de Node..."
+            echo "Construimos el build para Inertia..."
             docker exec -it laravel-vite npm run build
             
             echo "Ejecutando migrations..."
