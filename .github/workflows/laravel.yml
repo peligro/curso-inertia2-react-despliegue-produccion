@@ -52,7 +52,7 @@ jobs:
             # Instalar dependencias de Node.js en la carpeta laravel
             echo "Instalando dependencias de Node.js..."
             cd laravel
-            npm install --production --no-cache
+            npm install --production 
             cd ..
             
 
