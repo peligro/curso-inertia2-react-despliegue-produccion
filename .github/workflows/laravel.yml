@@ -147,6 +147,7 @@ jobs:
             docker exec laravel-app php artisan view:clear
 
             echo "Construimos el build para Inertia..."
+            rm -rf laravel/public/build
             docker exec -it laravel-vite npm run build
             
             echo "Ejecutando migrations..."
@@ -158,4 +159,7 @@ jobs:
             docker exec laravel-app php artisan view:cache
             docker exec laravel-app php artisan optimize
             
+            echo "Recargando PHP-FPM..."
+            docker exec laravel-app service php8.x-fpm reload || true
+
             echo "¡Implementación completada exitosamente!!!!"
