@@ -30,6 +30,7 @@ jobs:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
       FILESYSTEM_DISK: ${{ secrets.FILESYSTEM_DISK }}
+      OPENAI_API_URL: ${{ secrets.OPENAI_API_URL }}
 
     steps:
       - name: Checkout code
@@ -83,6 +84,7 @@ jobs:
             grep -v "^AWS_BUCKET=" | \
             grep -v "^FILESYSTEM_DISK=" | \
             grep -v "^AWS_ENDPOINT=" | \
+            grep -v "^OPENAI_API_URL=" | \
             grep -v "^DB_PASSWORD=" > .env.clean
             
             # Añade las variables correctas
@@ -109,6 +111,7 @@ jobs:
               echo "AWS_DEFAULT_REGION=${{ secrets.AWS_DEFAULT_REGION }}"
               echo "AWS_BUCKET=${{ secrets.AWS_BUCKET }}"
               echo "FILESYSTEM_DISK=${{ secrets.FILESYSTEM_DISK }}"
+              echo "OPENAI_API_URL=${{ secrets.OPENAI_API_URL }}"
               echo "AWS_ENDPOINT="
             } | awk '!seen[$0]++' | grep -v "^$" | grep -v "^#" > .env
             
