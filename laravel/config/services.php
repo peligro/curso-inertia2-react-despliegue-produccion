@@ -34,19 +34,20 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-    'openai' => [
-    'key' => env('OPENAI_API_KEY'),
+    'openai'=>[
+        'key'=>env('OPENAI_API_KEY'),
+        'url'=>env('OPENAI_API_URL')
     ],
-    'deepseek' => [
-        'key' => env('DEEPSEEK_API_KEY'),
+    'aws_parametros'=>[
+        'key'=>env('AWS_BUCKET')
+    ],
+    'deepseek'=>[
+        'key'=>env('DEEPSEEK_API_KEY'),
         'url'=>env('DEEPSEEK_API_URL')
     ],
-    'gemini' => [
-        'key' => env('GEMINI_API_KEY'),
+    'gemini'=>[
+        'key'=>env('GEMINI_API_KEY'),
         'url'=>env('GEMINI_BASE_URL')
-    ],
-    'aws_parametros' => [
-        'aws_bucket' => env('AWS_BUCKET'),
     ]
 
 ];

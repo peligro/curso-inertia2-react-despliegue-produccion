@@ -5,7 +5,6 @@ interface ImagenCustomProps {
   imagenUrl: string;
   titulo?: string;
   children: React.ReactNode;
-  tamaño?: 'sm' | 'lg' | 'xl';
 }
 
 const ImagenCustom = ({ 

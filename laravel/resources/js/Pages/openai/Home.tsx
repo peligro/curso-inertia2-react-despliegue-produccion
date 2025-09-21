@@ -1,11 +1,11 @@
 import { Head, Link } from "@inertiajs/react"
 import { route } from "ziggy-js"
 
+
 const Home = () => {
   return (
     <>
-   
-     <Head title="Openai" />
+    <Head title="Openai" />
       <div className="row">
         <div className="col-12">
           <nav aria-label="breadcrumb">
@@ -20,9 +20,8 @@ const Home = () => {
           
           <ul>
             <li>
-              <Link href={route('openai_api')}>Vía API</Link>
+              <Link href={route('openai_api')}>Via API</Link>
             </li>
-            
             <li>
               <Link href={route('openai_chatbot_api')}>Chatbot API</Link>
             </li>
@@ -39,7 +38,7 @@ const Home = () => {
               <Link href={route('openai_cliente_oficial_3')}>Generación de imagen con Cliente oficial de Laravel y dall-e-3</Link>
             </li>
             <li>
-              <Link href={route('openai_cliente_oficial_4_crear_publicacion')}>Crear publicación con Cliente oficial de Laravel y dall-e-3</Link>
+              <Link href={route('openai_cliente_oficial_4')}>Crear publicación con Cliente oficial de Laravel y dall-e-3</Link>
             </li>
           </ul>
 
@@ -50,7 +49,6 @@ const Home = () => {
 }
 
 export default Home
-
 {/* 
   <Head title="Openia" />
       <div className="row">

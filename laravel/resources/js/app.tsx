@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import Layout from './Layout/Layout';
 import { PageModuleInterface } from './Interfaces/PageModuleInterface';
 
+
 import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 
@@ -37,8 +38,8 @@ window.toastr = toastr;
 
 
 createInertiaApp({
-  title: (title) =>
-        title ? `Inertia - ${title}` : "Inertia",
+  title: (title)=>
+    title ? `Inertia - ${title}` : 'Inertia', 
   resolve: name => {
     const pages = import.meta.glob<PageModuleInterface>('./Pages/**/*.tsx', { eager: true });
         const pagePath = `./Pages/${name}.tsx`;
@@ -46,7 +47,7 @@ createInertiaApp({
         const pageModule = pages[pagePath];
 
         if (!pageModule) {
-            throw new Error(`Page "${name}" not found.`);
+            throw new Error(`Página "${name}" no encontrada.`);
         }
         const pageComponent = pageModule.default;
         const Page = pageComponent;
@@ -64,10 +65,8 @@ createInertiaApp({
   setup({ el, App, props }) {
     createRoot(el).render(<App {...props} />)
   },
-    progress: {//barra de progreso en peticiones http
-        color: '#ff0000',
-        showSpinner: true
-    }
+  progress:{//barra de progreso en peticiones http
+    color:'#ff0000',
+    showSpinner: true
+  }
 })
-
-

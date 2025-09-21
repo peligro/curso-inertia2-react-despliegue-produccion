@@ -1,10 +1,10 @@
-import { PageProps } from '@inertiajs/core';
+import {Page, PageProps} from '@inertiajs/core';
 import { CategoriaInterface } from './CategoriaInterface';
 
-export interface PublicacionesInterface {
+export interface PublicacionesInterface{
     id?: number;
     nombre: string;
-    slug: string; 
+    slug: string;
     descripcion: string;
     categorias_id: number;
     categorias?: CategoriaInterface;
@@ -12,14 +12,13 @@ export interface PublicacionesInterface {
     fecha: string;
 }
 
-// Interfaces para la paginación
-export interface PaginationLink {
+export interface PaginationLink{
     url: string | null;
     label: string;
     active: boolean;
 }
 
-export interface PublicacionesPagination {
+export interface PublicacionesPagination{
     current_page: number;
     data: PublicacionesInterface[];
     first_page_url: string;
@@ -33,9 +32,15 @@ export interface PublicacionesPagination {
     prev_page_url: string | null;
     to: number;
     total: number;
+
 }
 
-export interface PublicacionesProps extends PageProps {
+export interface PublicacionesProps extends PageProps{
     datos: PublicacionesPagination;
-    bucket: string;  
+    bucket: string;
+    flash?:{
+        success?:string;
+        css?:string;
+        mensaje?:string;
+    }
 }

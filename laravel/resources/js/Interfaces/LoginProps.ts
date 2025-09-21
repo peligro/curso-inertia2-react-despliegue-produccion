@@ -1,8 +1,6 @@
-export interface LoginProps {
-    errors?: {
+export interface LoginProps{
+    errors?:{
         correo?: string;
         password?: string;
-    };
-     
+    }
 }
- 

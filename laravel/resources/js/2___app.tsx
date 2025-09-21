@@ -11,7 +11,7 @@ createInertiaApp({
         const pageModule = pages[pagePath];
 
         if (!pageModule) {
-            throw new Error(`Page "${name}" not found.`);
+            throw new Error(`Página "${name}" no encontrada.`);
         }
         const pageComponent = pageModule.default;
         const Page = pageComponent;
@@ -30,4 +30,3 @@ createInertiaApp({
     createRoot(el).render(<App {...props} />)
   },
 })
-

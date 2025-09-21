@@ -1,24 +1,24 @@
-export interface User {
+export interface User{
     id: number;
     name: string;
     perfil: string;
-    perfil_id:string;
+    perfil_id: string;
     estado: string;
     estados_id: string;
 }
 
-export interface Auth {
+export interface Auth{
     user: User | null;
 }
 
-export interface LogueadoProps {
+export interface LogueadoProps{
     auth: Auth;
-    flash?: {
-        success?: string;
+    flash?:{
+        success: string;
         error?: string;
-        message?: string;
-        css?: string;
-        mensaje?: string;
+        message: string;
+        css: string;
+        mensaje: string;
     };
     errors?: Record<string, string>;
     bucket?: string;

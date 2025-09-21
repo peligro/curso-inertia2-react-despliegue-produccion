@@ -1,46 +1,45 @@
-import { PageProps } from '@inertiajs/core';
+import {PageProps} from '@inertiajs/core';
 
-export interface UsuarioInterface {
+export interface UsuarioInterface{
     id?: number;
     name: string;
-    email: string; 
+    email: string;
     remember_token?: string;
     created_at?: string;
 }
 
-export interface PerfilInterface {
+export interface PerfilInterface{
     id?: number;
     nombre: string;
 }
 
-export interface EstadosInterface {
+export interface EstadosInterface{
     id?: number;
     nombre: string;
 }
 
-export interface UsersMetadaInterface {
+export interface UsersMetadataInterface{
     id?: number;
     telefono: string;
     estados_id: number;
     perfiles_id: number;
     user_id: number;
-    
-    // CORREGIR: usar singular como en el modelo Laravel
+
     users?: UsuarioInterface;
-    estados?: EstadosInterface;  // singular, no "estados"
-    perfiles?: PerfilInterface;   // singular, no "perfiles"
+    estados?: EstadosInterface;
+    perfiles?: PerfilInterface;
 }
 
-// Interfaces para la paginación
-export interface PaginationLink {
+
+export interface PaginationLink{
     url: string | null;
     label: string;
     active: boolean;
 }
 
-export interface UsuariosPagination {
+export interface UsuariosPagination{
     current_page: number;
-    data: UsersMetadaInterface[];
+    data: UsersMetadataInterface[];
     first_page_url: string;
     from: number;
     last_page: number;
@@ -52,8 +51,14 @@ export interface UsuariosPagination {
     prev_page_url: string | null;
     to: number;
     total: number;
+
 }
- 
-export interface UsuariosProps extends PageProps {
-    datos: UsuariosPagination;   
+
+export interface UsuariosProps extends PageProps{
+    datos: UsuariosPagination;
+    flash?:{
+        success?:string;
+        css?:string;
+        mensaje?:string;
+    }
 }

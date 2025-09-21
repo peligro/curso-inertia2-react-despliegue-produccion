@@ -1,23 +1,37 @@
-import { PageProps } from "@inertiajs/core";
+import {PageProps} from '@inertiajs/core';
 
-
-export interface OpenIAInterfaceSimple {
-  pregunta: string;
-  respuesta:string;
-  tiempo: number;
-}
-
-export interface InertiaPageProps extends PageProps {
-  props: OpenIAInterfaceSimple;
-}
-
-// Interfaces
-export interface ApiResponse {
+export interface OpenIAInterfaceSimple{
+    pregunta: string;
     respuesta: string;
     tiempo: number;
-    pregunta_enviada: string;
-    url?:string;
 }
+
+export interface InertiaPageProps extends PageProps{
+    props: OpenIAInterfaceSimple;
+}
+
+export interface APIResponse{
+    pregunta_enviada: string;
+    respuesta: string;
+    tiempo: number;
+    url?: string;
+}
+
+export interface PageCustomProps extends PageProps{
+    errors?:{
+        pregunta?: string;
+        url?: string;
+    };
+    flash?:{
+        success?: string;
+        css?: string;
+        mensaje?: string;
+    };
+    api_response?: APIResponse;
+    bucket?: string;
+    [key: string]: any;
+}
+
 export interface PublicacionLinkedinResponse {
   pregunta_enviada: string;
   titulo: string;
@@ -27,23 +41,7 @@ export interface PublicacionLinkedinResponse {
   error: string | null;
   tiempo: number;
   url?:string;
-}
-// Extender PageProps para incluir la firma de índice
-export interface PageCustomProps extends PageProps {
-    errors?: {
-        pregunta?: string;
-        url?:string; 
-    };
-    flash?: {
-        success?: string;
-        css?: string;
-        mensaje?: string;
-    };
-    api_response?: ApiResponse;
-    aws_bucket?:string;
-    // Permitir otras propiedades dinámicas
-    [key: string]: any;
-}
+} 
 export interface PageCustomLinkedinProps extends PageProps {
     errors?: {
         pregunta?: string;
@@ -55,7 +53,7 @@ export interface PageCustomLinkedinProps extends PageProps {
         mensaje?: string;
     };
     api_response?: PublicacionLinkedinResponse;
-    aws_bucket?:string;
+    bucket?:string;
     // Permitir otras propiedades dinámicas
     [key: string]: any;
 }

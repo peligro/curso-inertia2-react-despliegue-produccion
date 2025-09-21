@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Perfiles extends Model
 {
     use HasFactory;
-    public $timestamps=false;
-    protected $table ='perfiles';
+    public $timestamps = false;
+    protected $table = 'perfiles';
 }

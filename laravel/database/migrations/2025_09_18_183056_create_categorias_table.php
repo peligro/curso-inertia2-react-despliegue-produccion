@@ -11,17 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('publicaciones', function (Blueprint $table) {
+        Schema::create('categorias', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 100);
             $table->string('slug', 100)->unique();
-            $table->text('descripcion');
-            $table->unsignedBigInteger('categorias_id');
-            $table->foreign('categorias_id')->references('id')->on('categorias')->onDelete('cascade');
-            $table->string('foto');
-            $table->datetime('fecha')->useCurrent();
-            
-            $table->index(['nombre', 'slug', 'foto','fecha']);
+
+            $table->index(['nombre']);
         });
     }
 
@@ -30,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('publicaciones');
+        Schema::dropIfExists('categorias');
     }
 };

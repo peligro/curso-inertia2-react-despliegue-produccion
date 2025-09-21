@@ -1,11 +1,11 @@
 import { Head, Link } from "@inertiajs/react"
 import { route } from "ziggy-js"
 
+
 const Home = () => {
   return (
     <>
-   
-     <Head title="Deepseek" />
+    <Head title="Deepseek" />
       <div className="row">
         <div className="col-12">
           <nav aria-label="breadcrumb">
@@ -20,14 +20,15 @@ const Home = () => {
           
           <ul>
             <li>
-              <Link href={route('deepseek_api')}>Vía API</Link>
+              <Link href={route('deepseek_api')}>Via API</Link>
             </li>
             <li>
-              <Link href={route('deepseek_chatbot_api')}>Chatbot básico</Link>
+              <Link href={route('deepseek_chatbot')}>Chatbot API</Link>
             </li>
             <li>
               <Link href={route('deepseek_consulta_simple')}>Consulta simple</Link>
             </li>
+            
           </ul>
 
         </div>
@@ -37,7 +38,6 @@ const Home = () => {
 }
 
 export default Home
-
 {/* 
   <Head title="Openia" />
       <div className="row">

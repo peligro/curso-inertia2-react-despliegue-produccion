@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Estados;
 use App\Models\Perfiles;
+
 class UsersMetadata extends Model
 {
     use HasFactory;
-    public $timestamps=false;
-    protected $table ='users_metadata';
+    public $timestamps = false;
+    protected $table = 'users_metadata';
 
     public function users()
     {

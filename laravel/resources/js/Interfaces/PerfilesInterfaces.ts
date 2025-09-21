@@ -1,14 +1,12 @@
 import {PageProps} from '@inertiajs/core';
 
-
-export interface CategoriaInterface{
-    id?:number;
+export interface PerfilesInterface{
+    id?: number;
     nombre: string;
-    slug: string;
 }
 
-export interface CategoriaProps extends PageProps{
-    datos : CategoriaInterface[];
+export interface PerfilesProps extends PageProps{
+    datos: PerfilesInterface[];
     flash?:{
         success?:string;
         css?:string;

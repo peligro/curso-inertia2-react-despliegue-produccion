@@ -23,8 +23,8 @@ return new class extends Migration
 
             $table->unsignedBigInteger('perfiles_id');
             $table->foreign('perfiles_id')->references('id')->on('perfiles')->onDelete('cascade');
-            
-            $table->index(['telefono']);
+
+            $table->index('telefono');
         });
     }
 

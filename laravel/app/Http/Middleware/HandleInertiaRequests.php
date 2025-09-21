@@ -35,10 +35,9 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-       return [
+        return [
             ...parent::share($request),
-            
-            // Compartir el usuario autenticado
+             // Compartir el usuario autenticado
             'auth' => [
                 'user' => $request->user() ? [
                     'id' => $request->user()->id,
@@ -51,23 +50,23 @@ class HandleInertiaRequests extends Middleware
                     // Agrega más campos si los necesitas
                 ] : null,
             ],
-            // Compartir errores de validación
-            'errors' => function () use ($request) {
+            'errors'=>function()use($request){
                 return $request->session()->get('errors')
-                    ? $request->session()->get('errors')->getBag('default')->getMessages()
-                    : (object) [];
+                ? $request->session()->get('errors')->getBag('default')->getMessages()
+                : (object)[];
             },
-            
-            // Compartir mensajes flash
-            'flash' => function () use ($request) {
-                return [
-                    'success' => $request->session()->get('success'),
-                    'error' => $request->session()->get('error'),
-                    'message' => $request->session()->get('message'),
-                    'css' => $request->session()->get('css'),
-                    'mensaje' => $request->session()->get('mensaje'),
+            //compartir mensajes flash
+            'flash'=>function()use($request){
+                return[
+                    'success'=>$request->session()->get('success'),
+                    'error'=>$request->session()->get('error'),
+                    'message'=>$request->session()->get('message'),
+                    'css'=>$request->session()->get('css'),
+                    'mensaje'=>$request->session()->get('mensaje'),
+                    
                 ];
             },
+            //cargamos nombre del bucket
             'bucket'=>config('filesystems.disks.s3.bucket')
         ];
     }

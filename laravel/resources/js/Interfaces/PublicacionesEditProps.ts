@@ -1,27 +1,30 @@
-import { PageProps } from '@inertiajs/core';
+import {PageProps} from '@inertiajs/core';
 import { CategoriaInterface } from './CategoriaInterface';
-export interface PublicacionesEditProps extends PageProps {
+
+
+export interface PublicacionesEditProps extends PageProps{
     categorias: CategoriaInterface[];
-    flash?: {
-        success?: string;
-        error?: string;
-        message?: string;
-    };
-    errors?: {
+    errors?:{
         categoria_id?: string;
-        nombre?: string;
-        descripcion?: string;
-        foto?: string;
+        nombre?:string;
+        descripcion?:string;
+        foto?:string;
         [key: string]: string | undefined;
-    };
-    datos: {
-        id: number;
-        nombre: string;
-        descripcion: string;
-        categorias_id: number;
-        foto: string;
-        slug: string;
-        fecha: string;
-    };
-    bucket: string; 
+    },
+    flash?:{
+        success?:string;
+        css?:string;
+        mensaje?:string;
+    },
+    bucket: string,
+    datos:{
+        id: number,
+        nombre: string,
+        descripcion: string,
+        categorias_id: number,
+        foto: string,
+        slug: string,
+        fecha: string,
+    }
 }
+

@@ -4,7 +4,7 @@ import { InertiaPageProps } from "resources/js/Interfaces/OpenAIProps";
 import { route } from "ziggy-js"
 
 
-const ConsultaSimple = () => {
+const API = () => {
      
     const {props} = usePage<{props: InertiaPageProps}>();
     const {respuesta, pregunta, tiempo} = props;
@@ -14,7 +14,7 @@ const ConsultaSimple = () => {
     const tiempoNumber= typeof tiempo ==='number' ? tiempo: Number(tiempo);
   return (
     <>
-    <Head title="Deepseek" />
+    <Head title="Gemini" />
       <div className="row">
         <div className="col-12">
           <nav aria-label="breadcrumb">
@@ -23,12 +23,12 @@ const ConsultaSimple = () => {
                 <Link href={route('home_index')}><i className="fas fa-home"></i></Link>
               </li>
               <li className="breadcrumb-item">
-                <Link href={route('deepseek_index')}>Deepseek</Link>
+                <Link href={route('gemini_index')}>Gemini</Link>
               </li>
-              <li className="breadcrumb-item active" aria-current="page">Consulta simple</li>
+              <li className="breadcrumb-item active" aria-current="page">Vía API</li>
             </ol>
           </nav> 
-          <h1>Consulta simple</h1>
+          <h1>Vía API</h1>
 
             <div className="card mt-4">
               
@@ -71,7 +71,7 @@ const ConsultaSimple = () => {
   )
 }
 
-export default ConsultaSimple
+export default API
 {/* 
   <Head title="Openia" />
       <div className="row">
